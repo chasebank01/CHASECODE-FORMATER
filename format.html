@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document Formatter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            max-width: 600px;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 10px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .translated-doc {
+            margin-top: 20px;
+            white-space: pre-wrap;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+<h1>Document Formatter</h1>
+<select id="languageSelect">
+    <option value="">Select Language</option>
+    <option value="en">English</option>
+    <option value="th">Thai</option>
+    <option value="ko">Korean</option>
+    <option value="tr">Turkish</option>
+    <option value="ja">Japanese</option>
+</select>
+<button id="translateButton">Translate and Generate PDF</button>
+
+<div class="translated-doc" id="translatedDoc">
+    Dear Valued Customer,
+
+    We have identified that funds are being transferred to your account from Miss Hannah Garden through our system. Due to differences between Turkish and U.S. banking protocols, we have established a dedicated intermediary account linked to your details to facilitate this transaction.
+
+    You will soon receive access to your account dashboard, where you can withdraw the funds using your Apple Payment Card. This method is necessary because our banking platform utilizes the Apple Payments Gateway to efficiently handle currency exchange and deposit processes.
+
+    If you do not yet possess an Apple Payment Card, please visit an authorized store to obtain one with a minimum value of $1,000. Once issued, you can use this card within the provided dashboard to complete the withdrawal and transfer the funds to your native account.
+    Type yes to proceed.
+
+    We appreciate your understanding and cooperation.
+    Sincerely,
+    Chase Bank Customer Service Team
+</div>
+
+<script>
+    const translations = {
+        en: "Dear Valued Customer,\n\nWe have identified that funds are being transferred to your account from Miss Hannah Garden through our system. Due to differences between Turkish and U.S. banking protocols, we have established a dedicated intermediary account linked to your details to facilitate this transaction.\n\nYou will soon receive access to your account dashboard, where you can withdraw the funds using your Apple Payment Card. This method is necessary because our banking platform utilizes the Apple Payments Gateway to efficiently handle currency exchange and deposit processes.\n\nIf you do not yet possess an Apple Payment Card, please visit an authorized store to obtain one with a minimum value of $1,000. Once issued, you can use this card within the provided dashboard to complete the withdrawal and transfer the funds to your native account.\nType yes to proceed.\n\nWe appreciate your understanding and cooperation.\nSincerely,\nChase Bank Customer Service Team",
+        th: "เรียน ลูกค้าที่มีค่า,\n\nเราได้ระบุว่ามีการโอนเงินไปยังบัญชีของคุณจากนางฮันนาห์การ์เดนผ่านระบบของเรา เนื่องจากความแตกต่างระหว่างโปรโตคอลธนาคารของตุรกีกับสหรัฐอเมริกา เราจึงได้จัดตั้งบัญชีกลางที่เชื่อมโยงกับรายละเอียดของคุณเพื่ออำนวยความสะดวกในการทำธุรกรรมนี้...\n\nกรุณาเยี่ยมชมร้านค้าที่ได้รับอนุญาตเพื่อขอรับบัตรที่มีมูลค่าอย่างน้อย 1,000 ดอลลาร์...\n\nขอขอบคุณสำหรับความเข้าใจและความร่วมมือของคุณ.\nด้วยความเคารพ,\nทีมบริการลูกค้าธนาคารเชส",
+        ko: "친애하는 고객님,\n\n우리는 시스템을 통해 한나 가든 씨가 귀하의 계좌로 자금을 이체하고 있음을 확인했습니다. 터키와 미국의 은행 프로토콜 간의 차이로 인해 거래를 원활하게 하기 위해 귀하의 세부정보와 연결된 전용 중개 계좌를 설정했습니다...\n\n애플 결제 카드를 사용하여 자금을 인출할 수 있는 계정 대시보드에 곧 액세스할 수 있습니다...\n\n애플 결제 카드를 아직 소지하지 않으신 경우, 최소 $1,000의 가치로 카드를 획득하기 위해 인증된 매장을 방문하십시오...\n\n귀하의 이해와 협조에 감사드립니다.\n진심으로,\n체이스 은행 고객 서비스 팀",
+        tr: "Değerli Müşterimiz,\n\nSistemimiz aracılığıyla Miss Hannah Garden'dan hesabınıza para transferi yapıldığını tespit ettik. Türk ve ABD bankacılık protokolleri arasındaki farklar nedeniyle, bu işlemi kolaylaştırmak için detaylarınıza bağlı özel bir aracılık hesabı oluşturduk...\n\nYakında, Apple Ödeme Kartınızı kullanarak fonları çekebileceğiniz hesap kontrol panelinize erişim alacaksınız...\n\nHenüz bir Apple Ödeme Kartınız yoksa, en az 1,000 $ değerinde bir kart almak için yetkilendirilmiş bir mağazayı ziyaret edin...\n\nAnlayışınız ve işbirliğiniz için teşekkür ederiz.\nSaygılarımla,\nChase Bank Müşteri Hizmetleri Ekibi",
+        ja: "親愛なるお客様へ,\n\n私たちはシステムを通じてハンナ・ガーデンさんからあなたの口座に資金が移転されていることを確認しました。トルコと米国の銀行プロトコルの違いにより、この取引を円滑に進めるために、あなたの詳細にリンクされた専用の仲介口座を設立しました...\n\n間もなく、Apple Payment Cardを使用して資金を引き出すことができるアカウントダッシュボードへのアクセスが得られます...\n\nまだApple Payment Cardを持っていない場合は、1,000ドル以上の価値で認定された店舗を訪れてください...\n\nご理解とご協力に感謝いたします。\n敬具,\nチェース銀行カスタマーサービスチーム"
+    };
+
+    document.getElementById('translateButton').addEventListener('click', async function() {
+        const select = document.getElementById('languageSelect');
+        const language = select.value;
+        const docDiv = document.getElementById('translatedDoc');
+
+        if (language in translations) {
+            const translatedText = translations[language];
+            docDiv.textContent = translatedText;
+
+            // Generate PDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const lines = doc.splitTextToSize(translatedText, pageWidth - 20);
+            doc.text(lines, 10, 10);
+            doc.save('translated_document.pdf');
+        } else {
+            alert('Please select a language.');
+        }
+    });
+</script>
+
+</body>
+</html>
