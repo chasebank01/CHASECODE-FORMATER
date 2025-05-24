@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chase Code Update Formatter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        header {
+            background-color: #add8e6; /* Light blue */
+            color: #0056b3;
+            text-align: center;
+            padding: 20px 0;
+            width: 100%;
+        }
+        footer {
+            background-color: #0056b3;
+            color: white;
+            text-align: center;
+            padding: 15px 0;
+            width: 100%;
+        }
+        h1, h2 {
+            margin: 0;
+        }
+        .hidden {
+            display: none;
+        }
+        .login-form, .main-content {
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        input[type="text"], button {
+            width: 100%; /* Equal width for both */
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px; /* Larger font size */
+            transition: border-color 0.3s, box-shadow 0.3s; /* Smooth transitions */
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        }
+        input[type="text"]:focus {
+            border-color: #007BFF; /* Change border color on focus */
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Light shadow on focus */
+            outline: none; /* Remove default outline */
+        }
+        button {
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .loading {
+            display: none;
+            margin: 20px auto;
+            text-align: center;
+        }
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 600px) {
+            h1, h2 {
+                font-size: 1.5em;
+            }
+            .login-form, .main-content {
+                margin: 10px;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Chase Bank - Code Update Formatter</h1>
+</header>
+
+<div id="loginPage" class="login-form">
+    <h2>Login</h2>
+    <div class="form-group">
+        <input type="text" id="loginNumber" placeholder="Enter your login number" />
+    </div>
+    <button id="loginButton">Login</button>
+    <div id="loginError" style="color: red; display: none;">Invalid login number. Please try again.</div>
+</div>
+
+<div id="loadingIndicator" class="loading">
+    <div class="spinner"></div>
+    <p>Redirecting, please wait...</p>
+</div>
+
+<div id="mainPage" class="main-content hidden">
+    <h2>Chase Bank Notification</h2>
+    <select id="languageSelect">
+        <option value="">Select Language</option>
+        <option value="th">Thai</option>
+        <option value="ko">Korean</option>
+        <option value="tr">Turkish</option>
+        <option value="ja">Japanese</option>
+    </select>
+    <button id="translateButton">Translate and Generate PDF</button>
+
+    <div class="translated-doc" id="translatedDoc">
+        Dear Valued Customer,
+
+        We are pleased to inform you that funds are being transferred to your account from Miss Hannah Garden through our secure banking system...
+        (rest of the document)
+    </div>
+</div>
+
+<footer>
+    <p>&copy; 2023 Chase Bank. All rights reserved. | Licensed by Chase Code: 12345-67890</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+    const validLoginNumber = "1800";
+
+    document.getElementById('loginButton').addEventListener('click', function() {
+        const loginNumber = document.getElementById('loginNumber').value;
+        if (loginNumber === validLoginNumber) {
+            localStorage.setItem("isLoggedIn", "true");
+            showLoadingIndicator();
+            setTimeout(redirectToExternalSite, 3000); // Redirect after 3 seconds
+        } else {
+            document.getElementById('loginError').style.display = "block";
+        }
+    });
+
+    function showLoadingIndicator() {
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('loadingIndicator').style.display = 'block';
+    }
+
+    function redirectToExternalSite() {
+        window.location.href = "https://www.example.com"; // Replace with your external URL
+    }
+
+    const translations = {
+        th: "เรียน ลูกค้าที่มีค่า,\n\nเรา...",
+        ko: "친애하는 고객님,\n\n우리는...",
+        tr: "Değerli Müşterimiz,\n\nSistemimiz...",
+        ja: "親愛なるお客様へ,\n\n私たちは..."
+    };
+
+    document.getElementById('translateButton').addEventListener('click', async function() {
+        const select = document.getElementById('languageSelect');
+        const language = select.value;
+        const docDiv = document.getElementById('translatedDoc');
+
+        if (language in translations) {
+            const translatedText = translations[language];
+            docDiv.textContent = translatedText;
+
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const lines = doc.splitTextToSize(translatedText, pageWidth - 20);
+            doc.text(lines, 10, 10);
+            doc.save('translated_document.pdf');
+        } else {
+            alert('Please select a language.');
+        }
+    });
+</script>
+
+</body>
+</html>
